@@ -1,0 +1,10 @@
+[package]
+
+name = "corectl"
+version = "0.0.1"
+authors = ["Jimmy Cuadra <jimmy@jimmycuadra.com>"]
+description = "Tools for bootstrapping CoreOS clusters."
+
+[dependencies]
+
+getopts = "0.2.4"
