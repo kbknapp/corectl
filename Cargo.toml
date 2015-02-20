@@ -3,7 +3,7 @@
 name = "corectl"
 version = "0.0.1"
 authors = ["Jimmy Cuadra <jimmy@jimmycuadra.com>"]
-description = "Tools for bootstrapping CoreOS clusters."
+description = "Bootstrapping and management of CoreOS clusters."
 
 [dependencies]
 

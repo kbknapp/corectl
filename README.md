@@ -1,6 +1,6 @@
 # corectl
 
-Tools for bootstrapping and managing CoreOS clusters.
+Bootstrapping and management of CoreOS clusters.
 
 ## Usage
 
