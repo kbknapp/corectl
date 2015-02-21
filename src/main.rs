@@ -1,4 +1,4 @@
-#![feature(collections, env)]
+#![feature(env, std_misc)]
 
 extern crate getopts;
 
@@ -6,8 +6,9 @@ use std::env;
 
 mod cli;
 
+#[allow(dead_code)]
 fn main() {
-    let args: Vec<String> = env::args().collect();
-    let str_args: Vec<&str> = args.iter().map(|s| &s[]).collect();
-    println!("{}", cli::run(str_args));
+    let args: env::Args = env::args();
+
+    println!("{}", cli::run(args));
 }
