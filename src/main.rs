@@ -10,5 +10,11 @@ mod cli;
 fn main() {
     let args: env::Args = env::args();
 
-    println!("{}", cli::run(args));
+    match cli::run(args) {
+        Ok(output) => println!("{}", output),
+        Err(error) => {
+            env::set_exit_status(1);
+            println!("{}", error);
+        }
+    }
 }
