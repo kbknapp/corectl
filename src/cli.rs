@@ -10,7 +10,7 @@ pub fn run<T: IntoIterator + IteratorExt>(args: T) -> Result<String, String>
 
     match options.parse(args.skip(1)) {
         Ok(matches) => {
-            Ok(options.usage("Usage: corectl [options]"))
+            Ok(options.usage("Usage: corectl [OPTIONS] COMMAND"))
         },
         Err(fail) => Err(fail.to_err_msg())
     }
@@ -24,6 +24,6 @@ mod tests {
     fn it_prints_help_with_no_args() {
         let output = run(vec!["corectl".to_string()].iter());
 
-        assert!(output.unwrap().starts_with("Usage: corectl [options]\n\nOptions:"));
+        assert!(output.unwrap().starts_with("Usage: corectl [OPTIONS] COMMAND\n\nOptions:"));
     }
 }
