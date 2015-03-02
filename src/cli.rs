@@ -1,6 +1,6 @@
 use getopts;
 
-const USAGE: &'static str = "Usage: corectl [OPTIONS] COMMAND [COMMAND OPTIONS]
+pub const USAGE: &'static str = "Usage: corectl [OPTIONS] COMMAND [COMMAND OPTIONS]
 
 Commands:
     deploy      Deploy fleet units
@@ -47,12 +47,54 @@ fn version() -> Result<String, String> {
 
 #[cfg(test)]
 mod tests {
-    use super::run;
+    use super::*;
 
     #[test]
     fn it_prints_help_with_no_args() {
         let output = run(vec!["corectl".to_string()]);
 
-        assert!(output.unwrap().starts_with("Usage: corectl [OPTIONS] COMMAND [COMMAND OPTIONS]\n\nOptions:"));
+        assert!(output.unwrap().starts_with(USAGE));
+    }
+
+    #[test]
+    fn it_prints_help_with_help_command() {
+        let output = run(vec!["corectl".to_string(), "help".to_string()]);
+
+        assert!(output.unwrap().starts_with(USAGE));
+    }
+
+    #[test]
+    fn it_prints_help_with_help_flag() {
+        let output = run(vec!["corectl".to_string(), "--help".to_string()]);
+
+        assert!(output.unwrap().starts_with(USAGE));
+    }
+
+    #[test]
+    fn it_prints_help_with_h_flag() {
+        let output = run(vec!["corectl".to_string(), "-h".to_string()]);
+
+        assert!(output.unwrap().starts_with(USAGE));
+    }
+
+    #[test]
+    fn it_prints_version_with_version_command() {
+        let output = run(vec!["corectl".to_string(), "version".to_string()]);
+
+        assert_eq!(output.unwrap(), env!("CARGO_PKG_VERSION"));
+    }
+
+    #[test]
+    fn it_prints_version_with_version_flag() {
+        let output = run(vec!["corectl".to_string(), "--version".to_string()]);
+
+        assert_eq!(output.unwrap(), env!("CARGO_PKG_VERSION"));
+    }
+
+    #[test]
+    fn it_prints_version_with_v_flag() {
+        let output = run(vec!["corectl".to_string(), "-v".to_string()]);
+
+        assert_eq!(output.unwrap(), env!("CARGO_PKG_VERSION"));
     }
 }
