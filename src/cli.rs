@@ -1,18 +1,22 @@
-use std::ffi::AsOsStr;
-use std::iter::IntoIterator;
-
 use getopts;
 
-pub fn run<T: IntoIterator + IteratorExt>(args: T) -> Result<String, String>
-    where <T as Iterator>::Item: AsOsStr
-{
+pub fn run(args: Vec<String>) -> Result<String, String> {
     let options = getopts::Options::new();
+    let matches = match options.parse(args.iter().skip(1)) {
+        Ok(matches) => matches,
+        Err(fail) => return Err(fail.to_err_msg())
+    };
+    let usage = Ok(options.usage("Usage: corectl COMMAND [OPTIONS]"));
 
-    match options.parse(args.skip(1)) {
-        Ok(matches) => {
-            Ok(options.usage("Usage: corectl [OPTIONS] COMMAND"))
-        },
-        Err(fail) => Err(fail.to_err_msg())
+    if matches.free.len() == 0 {
+        return usage;
+    }
+
+    let command = matches.free[0].as_slice();
+
+    match command {
+        "help" => usage,
+        unknown => { Err(format!("Unknown command: {}. Run `corectl help` for help.", unknown)) }
     }
 }
 
@@ -22,8 +26,8 @@ mod tests {
 
     #[test]
     fn it_prints_help_with_no_args() {
-        let output = run(vec!["corectl".to_string()].iter());
+        let output = run(vec!["corectl".to_string()]);
 
-        assert!(output.unwrap().starts_with("Usage: corectl [OPTIONS] COMMAND\n\nOptions:"));
+        assert!(output.unwrap().starts_with("Usage: corectl COMMAND [OPTIONS]\n\nOptions:"));
     }
 }

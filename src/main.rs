@@ -1,4 +1,4 @@
-#![feature(env, std_misc)]
+#![feature(core, exit_status)]
 
 extern crate getopts;
 
@@ -8,7 +8,7 @@ mod cli;
 
 #[allow(dead_code)]
 fn main() {
-    let args: env::Args = env::args();
+    let args = env::args().collect();
 
     match cli::run(args) {
         Ok(output) => println!("{}", output),
