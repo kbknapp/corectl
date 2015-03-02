@@ -1,4 +1,4 @@
-use getopts;
+use getopts::Options;
 
 pub const USAGE: &'static str = "\
 Usage: corectl [OPTIONS] COMMAND [COMMAND OPTIONS]
@@ -12,7 +12,7 @@ Commands:
 ";
 
 pub fn run(args: Vec<String>) -> Result<String, String> {
-    let mut options = getopts::Options::new();
+    let mut options = Options::new();
     options.optflag("h", "help", "Output this help message");
     options.optflag("v", "version", "Output corectl's version number");
     let matches = match options.parse(args.iter().skip(1)) {
