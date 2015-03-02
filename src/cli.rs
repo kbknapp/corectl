@@ -1,11 +1,15 @@
 use getopts;
 
-pub const USAGE: &'static str = "Usage: corectl [OPTIONS] COMMAND [COMMAND OPTIONS]
+pub const USAGE: &'static str = "\
+Usage: corectl [OPTIONS] COMMAND [COMMAND OPTIONS]
+       corectl help COMMAND
 
 Commands:
-    deploy      Deploy fleet units
-    help        Output this help message
-    version     Output corectl's version number";
+    deploy      Deploy a new version of a service
+    service     Create or delete services
+    help        Output this help message, or help for COMMAND
+    version     Output corectl's version number\
+";
 
 pub fn run(args: Vec<String>) -> Result<String, String> {
     let mut options = getopts::Options::new();
@@ -32,6 +36,7 @@ pub fn run(args: Vec<String>) -> Result<String, String> {
     match command {
         "version" => version(),
         "deploy" => deploy(matches.free.clone()),
+        "service" => service(matches.free.clone()),
         "help" => usage,
         unknown => { Err(format!("Unknown command: {}. Run `corectl` for help.", unknown)) }
     }
@@ -39,6 +44,10 @@ pub fn run(args: Vec<String>) -> Result<String, String> {
 
 fn deploy(args: Vec<String>) -> Result<String, String> {
     Ok("Deployed stuff.".to_string())
+}
+
+fn service(args: Vec<String>) -> Result<String, String> {
+    Ok("Added/removed service.".to_string())
 }
 
 fn version() -> Result<String, String> {
