@@ -1,109 +1,39 @@
-use getopts::Options;
+use clap::ArgMatches;
 
-pub const USAGE: &'static str = "\
-Usage: corectl [OPTIONS] COMMAND [COMMAND OPTIONS]
-       corectl help COMMAND
-
-Commands:
-    deploy      Deploy a new version of a service
-    service     Create or delete services
-    help        Output this help message, or help for COMMAND
-    version     Output corectl's version number\
-";
-
-pub fn run(args: Vec<String>) -> Result<String, String> {
-    let mut options = Options::new();
-    options.optflag("h", "help", "Output this help message");
-    options.optflag("v", "version", "Output corectl's version number");
-    let matches = match options.parse(args.iter().skip(1)) {
-        Ok(matches) => matches,
-        Err(fail) => return Err(fail.to_err_msg())
-    };
-    let usage = Ok(options.usage(USAGE));
-
-    if matches.opt_present("v") {
-        return version();
-    } else if matches.opt_present("h") {
-        return usage;
-    }
-
-    if matches.free.len() == 0 {
-        return usage;
-    }
-
-    let command = matches.free[0].as_slice();
-
-    match command {
-        "version" => version(),
-        "deploy" => deploy(matches.free.clone()),
-        "service" => service(matches.free.clone()),
-        "help" => usage,
-        unknown => { Err(format!("Unknown command: {}. Run `corectl` for help.", unknown)) }
+pub fn run(matches: &ArgMatches) -> Result<String, String> {
+    match matches.subcommand_name() {
+        Some("deploy")  => deploy(matches.subcommand_matches("deploy").unwrap()),
+        Some("service") => service(matches.subcommand_matches("service").unwrap()),
+        _               => { Err(format!("Unknown command: Run `corectl` for help.")) }
     }
 }
 
-fn deploy(args: Vec<String>) -> Result<String, String> {
-    Ok("Deployed stuff.".to_string())
+fn deploy(matches: &ArgMatches) -> Result<String, String> {
+    Ok(format!("Deployed: {}", matches.value_of("APPTAG").unwrap()))
 }
 
-fn service(args: Vec<String>) -> Result<String, String> {
-    Ok("Added/removed service.".to_string())
+fn service(matches: &ArgMatches) -> Result<String, String> {
+    match matches.subcommand_name() {
+        Some("scale")  => service_scale(matches.subcommand_matches("scale").unwrap()),
+        Some("remove") => service_remove(matches.subcommand_matches("remove").unwrap()),
+        Some("add")    => service_add(matches.subcommand_matches("add").unwrap()),
+        _              => Err(format!("Ambiguous command, please re-run with --help or help"))
+    }
 }
 
-fn version() -> Result<String, String> {
-    Ok(env!("CARGO_PKG_VERSION").to_string())
+fn service_scale(matches: &ArgMatches) -> Result<String, String> {
+    Ok(format!("Scaling {} to {} instances", matches.value_of("APP").unwrap(), matches.value_of("AMMOUNT").unwrap()))
+}
+
+fn service_remove(matches: &ArgMatches) -> Result<String, String> {
+    Ok(format!("Removing {}", matches.value_of("APP").unwrap()))
+}
+
+fn service_add(matches: &ArgMatches) -> Result<String, String> {
+    Ok(format!("Adding {} with unit file {}", matches.value_of("APP").unwrap(), matches.value_of("UNITFILE").unwrap()))
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
-    #[test]
-    fn it_prints_help_with_no_args() {
-        let output = run(vec!["corectl".to_string()]);
-
-        assert!(output.unwrap().starts_with(USAGE));
-    }
-
-    #[test]
-    fn it_prints_help_with_help_command() {
-        let output = run(vec!["corectl".to_string(), "help".to_string()]);
-
-        assert!(output.unwrap().starts_with(USAGE));
-    }
-
-    #[test]
-    fn it_prints_help_with_help_flag() {
-        let output = run(vec!["corectl".to_string(), "--help".to_string()]);
-
-        assert!(output.unwrap().starts_with(USAGE));
-    }
-
-    #[test]
-    fn it_prints_help_with_h_flag() {
-        let output = run(vec!["corectl".to_string(), "-h".to_string()]);
-
-        assert!(output.unwrap().starts_with(USAGE));
-    }
-
-    #[test]
-    fn it_prints_version_with_version_command() {
-        let output = run(vec!["corectl".to_string(), "version".to_string()]);
-
-        assert_eq!(output.unwrap(), env!("CARGO_PKG_VERSION"));
-    }
-
-    #[test]
-    fn it_prints_version_with_version_flag() {
-        let output = run(vec!["corectl".to_string(), "--version".to_string()]);
-
-        assert_eq!(output.unwrap(), env!("CARGO_PKG_VERSION"));
-    }
-
-    #[test]
-    fn it_prints_version_with_v_flag() {
-        let output = run(vec!["corectl".to_string(), "-v".to_string()]);
-
-        assert_eq!(output.unwrap(), env!("CARGO_PKG_VERSION"));
-    }
 }

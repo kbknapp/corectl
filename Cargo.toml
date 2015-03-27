@@ -6,5 +6,4 @@ authors = ["Jimmy Cuadra <jimmy@jimmycuadra.com>"]
 description = "A tool for running applications on CoreOS."
 
 [dependencies]
-
-getopts = "0.2.4"
+clap = "*"
