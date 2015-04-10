@@ -1,10 +1,10 @@
 use clap::ArgMatches;
 
 pub fn run(matches: &ArgMatches) -> Result<String, String> {
-    match matches.subcommand_name() {
-        Some("deploy")  => deploy(matches.subcommand_matches("deploy").unwrap()),
-        Some("service") => service(matches.subcommand_matches("service").unwrap()),
-        _               => { Err(format!("Unknown command: Run `corectl` for help.")) }
+    match matches.subcommand() {
+        ("deploy", Some(matches))  => deploy(matches),
+        ("service", Some(matches)) => service(matches),
+        ("", None) | _             => Err(format!("{}\nPlease re-run with --help for more information.", matches.usage())),
     }
 }
 
@@ -13,11 +13,11 @@ fn deploy(matches: &ArgMatches) -> Result<String, String> {
 }
 
 fn service(matches: &ArgMatches) -> Result<String, String> {
-    match matches.subcommand_name() {
-        Some("scale")  => service_scale(matches.subcommand_matches("scale").unwrap()),
-        Some("remove") => service_remove(matches.subcommand_matches("remove").unwrap()),
-        Some("add")    => service_add(matches.subcommand_matches("add").unwrap()),
-        _              => Err(format!("Ambiguous command, please re-run with --help or help"))
+    match matches.subcommand() {
+        ("scale", Some(matches))  => service_scale(matches),
+        ("remove", Some(matches)) => service_remove(matches),
+        ("add", Some(matches))    => service_add(matches),
+        ("", None) | _            => Err(format!("{}\nPlease re-run with --help for more information", matches.usage())),
     }
 }
 

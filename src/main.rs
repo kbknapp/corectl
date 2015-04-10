@@ -1,8 +1,4 @@
-#![feature(exit_status)]
-
 extern crate clap;
-
-use std::env;
 
 use clap::{App, Arg, SubCommand};
 
@@ -59,8 +55,8 @@ fn main() {
     match cli::run(&matches) {
         Ok(output) => println!("{}", output),
         Err(error) => {
-            env::set_exit_status(1);
             println!("{}", error);
+            std::process::exit(1);
         }
     }
 }
